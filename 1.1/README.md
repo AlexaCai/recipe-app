@@ -1,4 +1,4 @@
-# Python Recipe app (command line version)
+# Python recipe app (command line version)
 
 **Content**
 
@@ -11,13 +11,13 @@
 
 This Recipe app has been created to help users plan their next meals. Users can create and modify recipes with ingredients and cooking time, which then display a difficulty parameter automatically calculated by the app. Users can also search for recipes by their ingredients.
 
-The Recipe app is separated in two development phases: 
+This project is separated in two parts: 
 
-**1-** First, a command line application, which is able to create, read, and modify recipes, as well as searching for recipes based on ingredients.
+**1-** A command line application for the Recipe app, which is able to create, read, and modify recipes, as well as searching for recipes based on ingredients.
 
-**2-** Second, a web application using the Django framework, built on the first deliverable (command line application) to deliver a more user-friendly UI for the Recipe app. 
+**2-** A web application using the Django framework, built on the first deliverable (command line application) to deliver a more user-friendly UI for the recipe app. 
 
-**The current repository and README concerns the first part (command line application).** To see the second part related to Django, please visit the [following repository](placeholer).
+**The current repository and README concerns the first part (command line application).** To see the second part related to Django, please visit the [following repository](placeholer). 
 
 > (insert link when Achievement 2 repository will be created)
 
@@ -47,15 +47,21 @@ If Python is not installed, head over  [download version 3.8.7](https://www.pyth
 
 **1.2 - Virtual environment creation**
 
-Install the `virtualenvwrapper` package via the Command Prompt. Then,  create a new virtual environment by running the command `mkvirtualenv <the name you want>.`
+Install the *virtualenvwrapper* package via the Command Prompt. For Windows users, this is done by running `pip install virtualenvwrapper-win`. Then,  create a new virtual environment by running the command `mkvirtualenv <the name you want>` (**see point A in image below**).
 
+![Virtual Environment Creation](https://github.com/AlexaCai/recipe-app-cli/blob/main/1.1/1%20-%20Virtual%20env.%20creation%20and%20VSC%20launching.png?raw=true)
 
 **1.3 - First Python file creation** 
 
-Still on the Command Prompt, move (cd) to the directory in which you want the Python code files to be located, and run the command `code .`. This will open Visual Code Studio, and allow creating a python file and start writing codes. Once the codes are written, save the file.
+Still on the Command Prompt, move (cd) to the directory in which you want the Python code files to be located, and run `code .` (**see point B in image below**). This will open Visual Code Studio, and allow creating a python file and start writing codes. Once the codes are written, save the file.
+
+![VCS launching](https://github.com/AlexaCai/recipe-app-cli/blob/main/1.1/1%20-%20Virtual%20env.%20creation%20and%20VSC%20launching.png?raw=true)
+
 
 **1.4 - Running the Python code file**
 
-Still on the Command Prompt (and in the folder path where the Python file  has been saved), run the command `python <script filename>`. This will start the Python interpreter and asks it to run commands from the specified script file. The results of the codes will then be displayed in the Command Prompt.
+Still on the Command Prompt (and in the folder path where the Python file  has been saved), run the command `python <script filename>` (**see point D in image below**). This will start the Python interpreter and asks it to run commands from the specified script file. The results of the codes will then be displayed in the Command Prompt.
 
-**Note**: If the codes aren't rendering as supposed in step 1.4, it's possible to use the Python shell REPL, and write the codes line by line directly in it to see the output for each line (which is useful to try out syntax or quick debugging).
+**Note**: If the codes aren't rendering as supposed in step 1.4, it's possible to use the Python shell REPL running `python`, and write the codes line by line directly in it to see the output for each line (which is useful to try out syntax or quick debugging). **See point C in image below**.
+
+![Python REPL and script running](https://github.com/AlexaCai/recipe-app-cli/blob/main/1.1/2%20-%20REPL%20testing%20and%20script%20running.png?raw=true)
