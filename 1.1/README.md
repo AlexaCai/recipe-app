@@ -62,6 +62,6 @@ Still on the Command Prompt, move (cd) to the directory in which you want the Py
 
 Still on the Command Prompt (and in the folder path where the Python file  has been saved), run the command `python <script filename>` (**see point D in image below**). This will start the Python interpreter and asks it to run commands from the specified script file. The results of the codes will then be displayed in the Command Prompt.
 
-**Note**: If the codes aren't rendering as supposed in step 1.4, it's possible to use the Python shell REPL running `python`, and write the codes line by line directly in it to see the output for each line (which is useful to try out syntax or quick debugging). **See point C in image below**.
+**Note**: If the codes aren't rendering as supposed when running `python <script filename>`, it's possible to use the Python shell REPL running `python` and write the codes line by line directly in it to see the output for each line (which is useful to try out syntax or quick debugging). **See point C in image below**.
 
 ![Python REPL and script running](https://github.com/AlexaCai/recipe-app-cli/blob/main/1.1/2%20-%20REPL%20testing%20and%20script%20running.png?raw=true)
