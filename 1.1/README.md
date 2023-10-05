@@ -1,4 +1,4 @@
-# Python recipe app (command line version)
+# Python Recipe app (command line version)
 
 **Content**
 
