@@ -4,5 +4,3 @@ userInput = int(input("Enter second number"))
 b = userInput
 c = a + b
 print('Result is', c)
-
-test
