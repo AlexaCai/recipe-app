@@ -36,7 +36,7 @@ The Recipe app works on Python 3.6+ installations and is connected to a MySQL da
 
 ## Technical aspects (development)
 
-This section presents the development process of the command line application, step by step.
+**Table of content**
 
 - [Step 1](#step-1)  - Setting up the Python environement
 - [Step 2 ](#step-2) - Creating the data structures
