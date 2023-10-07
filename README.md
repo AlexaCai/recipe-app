@@ -40,7 +40,6 @@ This section presents the development process of the command line application, s
 
 - [Step 1](#step-1)  - Setting up the Python environement
 - [Step 2 ](#step-2) - Creating the data structures
-- [Step 3](#step-3) - TBD
 
 ### Step 1 
 
@@ -152,5 +151,3 @@ Where:
 - `[0]` in `print(all_recipes[0]['ingredients'])` represent the index position of the first recipe in the list, and so on for the second one, the third one, etc.
 
 ![Recipe list creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/8%20-%20printing%20ingredients%20for%20each%20recipe%20in%20recipe%20list.png?raw=true)
-
-### Step 3
