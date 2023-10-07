@@ -82,10 +82,10 @@ Still on the Command Prompt (and in the folder path where the Python file  has b
 Create the following data structure to store each recipe information:
 
     recipe_1 = {
-	    'name': 'recipe_name', 
-	    'cooking_time': 0, 
-		'ingredients': ['recipe_ingredients']
-		}
+	            'name': 'recipe_name', 
+	            'cooking_time': 0, 
+	            'ingredients': ['recipe_ingredients']
+		    }
 Where:
 
 - `recipe_1` = variable for X recipe
