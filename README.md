@@ -1,6 +1,6 @@
 # Python recipe app (command line version)
 
-**Content**
+**Table of content**
 
 - [Project description](#project-description)
 - [User interface](#user-interface)
