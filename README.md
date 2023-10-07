@@ -5,7 +5,7 @@
 - [Project description](#project-description)
 - [User interface](#user-interface)
 - [Technical aspects (overview)](#technical-aspects-overview)
-- [Technical aspect (development)](#technical-aspects-development)
+- [Technical aspects (development)](#technical-aspects-development)
 
 
 ## Project description
