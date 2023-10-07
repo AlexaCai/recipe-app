@@ -83,18 +83,16 @@ Still on the Command Prompt (and in the folder path where the Python file  has b
 Create the following data structure to store each recipe information:
 
     recipe_1 = {
-			    'name': 'recipe_name', 
-			    'cooking_time': 0, 
-			    'ingredients': ['recipe_ingredients']
-			    }
+	    'name': 'recipe_name', 
+	    'cooking_time': 0, 
+		'ingredients': ['recipe_ingredients']
+		}
 Where:
 
 - `recipe_1` = variable for X recipe
 - `'name': 'recipe_name'` = first key-value (string)
 - `'cooking_time': 0` = second key-value (integer)
 - `'ingredients': ['recipe_ingredients']` = third key-value (list)
-<br>
-<br>
 
 ![Recipe data structure creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/2%20-data%20structure%20for%20recipes.png?raw=true)
 
@@ -107,7 +105,6 @@ Based on the data structure defined in step 2.1, add real information to create 
     recipe_1['name'] = 'tea'
     recipe_1['cooking_time'] = 5
     recipe_1['ingredients'] = ['Tea leaves', 'Sugar', 'Water']
-<br>
 
 ![Recipe creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/3%20-%20first%20recipe%20creation%20.png?raw=true)
 
@@ -120,15 +117,12 @@ To create a structure that displays all available / created recipes, a ***list**
 Then add the newly created recipe (recipe_1) to it:
 
     all_recipes.append(recipe_1)
-<br>
 
 ![Recipe list creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/4%20-%20recipe%20list%20creation.png?raw=true)
 
 **2.4 – Optionally, create more recipes**
 
 Optionally, create more recipes for a better user experience and a more complete web app. To do so, steps 2.1 and 2.2 can be done again.
-<br>
-<br>
 
 ![Recipe list creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/5-%201additional%20recipes%20addition.png?raw=true)
 
@@ -141,7 +135,6 @@ Then, add the newly created recipes to the list containing all recipes (all_reci
     all_recipes.append(recipe_3)
     all_recipes.append(recipe_4)
     all_recipes.append(recipe_5)
-<br>
 
 ![Recipe list creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/6%20-%20populating%20recipe%20list%20with%20additional%20recipes.png?raw=true)
 
@@ -157,8 +150,6 @@ Optionally, you can now retrieve different information out of the recipes added 
 
 Where:
 - `[0]` in `print(all_recipes[0]['ingredients'])` represent the index position of the first recipe in the list, and so on for the second one, the third one, etc.
-<br>
-<br>
 
 ![Recipe list creation](https://github.com/AlexaCai/recipe-app-cli/blob/working-branch/1.2/8%20-%20printing%20ingredients%20for%20each%20recipe%20in%20recipe%20list.png?raw=true)
 
