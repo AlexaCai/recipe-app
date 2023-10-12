@@ -35,20 +35,20 @@ class Recipe(object):
     def set_cooking_time(self, cooking_time):
         self.cooking_time = cooking_time
         # Line below ensure that if the cooking time is updated / changed, the function calculating \
-        # difficulty will get triggered again to display any change in the difficulty if necessary
+        # difficulty will be triggered again to display any changes in the difficulty level if necessary
         self.difficulty = self.calculate_difficulty(self.cooking_time, self.ingredients)
 
     # Using an asterisk * before the argument ingredients to make it a variable-length arguments and allow to enter multiple ingredients at the same time
-    # *ingredients create a tuple out of the user input, wheter there's only one ingredient added or more
+    # *ingredients create a tuple out of the user input, whether there's only one ingredient added or more
     def add_ingredients(self, *ingredients):
-        # This line iterates through each element in the tuple, treating them as individual strings
+        # Line below iterates through each element in the tuple, treating them as individual strings
         # This allow to work with ingredients added by users as strings up to this point, not tuple anymore
         for ingredient in ingredients:
             if ingredient not in self.ingredients:
                 self.ingredients.append(ingredient)
                 self.update_all_ingredients()
                 # Ensure that if the ingredients are updated / changed, the function calculating difficulty \
-                # will get triggered again to display any change in the difficulty if necessary
+                # will be triggered again to display any changes in the difficulty level if necessary
                 self.difficulty = self.calculate_difficulty(
                     self.cooking_time, self.ingredients
                 )
@@ -112,9 +112,57 @@ class Recipe(object):
 
 # ADDING OBJECTS TO THE LIST
 
+recipes_list = []
+
 tea = Recipe("Tea")
 tea.add_ingredients("Tea leaves", "Sugar", "Water", "Salt")
-tea.set_cooking_time(35)
+tea.set_cooking_time(5)
 tea.get_difficulty()
+recipes_list.append(tea)
 
-print(tea)
+
+coffee = Recipe("Coffe")
+coffee.add_ingredients("Coffee Powder", "Sugar", "Water")
+coffee.set_cooking_time(5)
+coffee.get_difficulty()
+recipes_list.append(coffee)
+
+
+cake = Recipe("Cake")
+cake.add_ingredients(
+    "Sugar", "Butter", "Eggs", "Vanilla Essence", "Flour", "Baking Powder", "Milk"
+)
+cake.set_cooking_time(50)
+cake.get_difficulty()
+recipes_list.append(cake)
+
+
+BananaSmoothie = Recipe("Banana Smoothie")
+BananaSmoothie.add_ingredients("Bananas", "Milk", "Peanut Butter", "Sugar", "Ice Cubes")
+BananaSmoothie.set_cooking_time(5)
+BananaSmoothie.get_difficulty()
+recipes_list.append(BananaSmoothie)
+
+print("-------------------------------------------------------------")
+print("This is all your recipes, in alphabetical order:")
+print("-------------------------------------------------------------")
+
+# Sort recipe in alphabetical order
+recipes = sorted(recipes_list, key=lambda x: x.name)
+for recipe in recipes:
+    print(recipe)
+
+print("-------------------------------------------------------------")
+print("This is all your recipes containing the ingredient 'Water' :")
+print("-------------------------------------------------------------")
+Recipe.recipe_search(recipes_list, "Water")
+
+print("-------------------------------------------------------------")
+print("This is all your recipes containing the ingredient 'Sugar' :")
+print("-------------------------------------------------------------")
+Recipe.recipe_search(recipes_list, "Sugar")
+
+print("-------------------------------------------------------------")
+print("This is all your recipes containing the ingredient 'Bananas' :")
+print("-------------------------------------------------------------")
+Recipe.recipe_search(recipes_list, "Bananas")
