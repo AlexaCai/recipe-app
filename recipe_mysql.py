@@ -51,12 +51,6 @@ def create_recipe(conn, cursor):
         )
         ingredients = ingredients_input.split(", ")
         difficulty = calculate_difficulty(cooking_time, ingredients)
-        recipe = {
-            "name": name,
-            "cooking_time": cooking_time,
-            "ingredients": ingredients,
-            "difficulty": difficulty,
-        }
 
         sql = "INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s)"
         # Since MySQL doesn’t fully support arrays, ingredients list needs to be converted into a \
@@ -67,8 +61,7 @@ def create_recipe(conn, cursor):
 
         print("-----------------------")
         last_insert_id = cursor.lastrowid
-        print("The ID of the newly inserted recipe is:", last_insert_id)
-        print("Here is your newly created recipe: " + str(recipe))
+        print("Recipe added sucessfully!")
         print("-----------------------")
 
     except:
@@ -88,20 +81,14 @@ def search_recipe(conn, cursor):
     for ingredients in results:
         ingredients_string = ingredients[0]
         ingredients = ingredients_string.split(", ")
-        print(
-            "These are the ingredients from the table as lists for each row"
-            + str(ingredients)
-        )
 
         for item in ingredients:
-            print(
-                "These are the ingredients from the table converted into string items:"
-                + str(item)
-            )
             if item not in all_ingredients:
                 all_ingredients.append(item)
 
     print("-----------------------")
+    print("These is all the ingredients with which you can search for recipes:")
+    print()
 
     # Display each ingredient to users, with a number on the side to make it easier for users to pick one
     for index, ingredient in enumerate(all_ingredients, start=1):
@@ -123,9 +110,14 @@ def search_recipe(conn, cursor):
         val = ("%" + search_ingredient + "%",)
         cursor.execute(sql, val)
         result = cursor.fetchall()
-        print("Here are the recipes containing this ingredient:")
+        print("Here are the recipe(s) containing this ingredient:")
         for row in result:
-            print(row)
+            print(
+                "Name: ", row[0])  # This is equal to recipe id, but renamed to by more user-friendly
+            print("Ingredients: ", row[1])
+            print("Cooking time: ", row[2])
+            print("Difficulty: ", row[3])
+
     except:
         print("The input is incorrect or something went wrong.")
 
@@ -137,6 +129,9 @@ def update_recipe(conn, cursor):
     cursor.execute(
         "SELECT id, name, ingredients, cooking_time, difficulty FROM Recipes"
     )
+    print("-----------------------")
+    print("These is all the recipes you can update:")
+    print()
     result = cursor.fetchall()
     for row in result:
         print(
@@ -153,7 +148,8 @@ def update_recipe(conn, cursor):
             input("Pick a recipe from the list based on its number: ")
         )
         print("-----------------------")
-        print("Field possible to update for that recipe:")
+        print("Fields possible to update for that recipe:")
+        print()
         print("1. Name")
         print("2. Cooking time (min)")
         print("3. Ingredients")
@@ -162,7 +158,7 @@ def update_recipe(conn, cursor):
         )
 
         if field_selected == 1:
-            updated_name = str(input("Enter the update name for this recipe: "))
+            updated_name = str(input("Enter the new name for this recipe: "))
 
             sql = "UPDATE Recipes SET name = %s WHERE id=%s"
             val = (updated_name, recipe_selected)
@@ -181,7 +177,6 @@ def update_recipe(conn, cursor):
                 "SELECT ingredients FROM Recipes WHERE id = %s", (recipe_selected,)
             )
             results = cursor.fetchall()
-            print(results)
             # When ingredients are fetched from database, they comes in following format: [('ing1, ing2',)] \
             # to ensure to pass the ingredients correctly in the calculate_difficulty function below \
             # the results[0][0] is used to access the string of ingredients and store it in ingredients_string \
@@ -192,7 +187,7 @@ def update_recipe(conn, cursor):
             ingredients = ingredients_string.split(", ")
 
             updated_cooking_time = int(
-                input("Enter the updated cooking time (in min) for this recipe: ")
+                input("Enter the new cooking time (in min) for this recipe: ")
             )
             updated_difficulty = calculate_difficulty(updated_cooking_time, ingredients)
 
@@ -225,7 +220,7 @@ def update_recipe(conn, cursor):
             cooking_time = results[0][0]
 
             ingredients_input = input(
-                "Enter the updated ingredients for this recipe - each one being separated by a comma following by a space (bread, cheese, etc.)): "
+                "Enter the new ingredients for this recipe - each one being separated by a comma following by a space (bread, cheese, etc.): "
             )
             updated_ingredients = ingredients_input.split(", ")
             updated_difficulty = calculate_difficulty(cooking_time, updated_ingredients)
@@ -255,6 +250,9 @@ def delete_recipe(conn, cursor):
     cursor.execute(
         "SELECT id, name, ingredients, cooking_time, difficulty FROM Recipes"
     )
+    print("-----------------------")
+    print("These is all the recipes you can delete:")
+    print()
     result = cursor.fetchall()
     for row in result:
         print(
@@ -268,7 +266,7 @@ def delete_recipe(conn, cursor):
     try:
         print("-----------------------")
         recipe_selected = int(
-            input("Pick a recipe to delete from the list based on its number: ")
+            input("Pick a recipe to delete from the list by entering its number: ")
         )
 
         sql = "DELETE FROM Recipes WHERE id=%s"
@@ -285,7 +283,7 @@ def delete_recipe(conn, cursor):
 # Code to display the main menu to user
 
 
-def main_menu():
+def main_menu(conn, cursor):
     user_choice = None
 
     while user_choice != "quit":
@@ -319,4 +317,4 @@ def main_menu():
     print("The user chose: " + str(user_choice))
 
 
-main_menu()
+main_menu(conn, cursor)
