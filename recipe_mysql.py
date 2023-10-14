@@ -43,31 +43,36 @@ def calculate_difficulty(cooking_time, ingredients):
 
 
 def create_recipe(conn, cursor):
-    name = str(input("Enter the name of the recipe: "))
-    cooking_time = int(input("Enter the cooking time in minutes: "))
-    ingredients_input = input(
-        "Enter all the ingredients required for the recipe - each one being separated by a comma following by a space (bread, cheese, etc.)): "
-    )
-    ingredients_split = ingredients_input.split(", ")
-    ingredients = ", ".join(ingredients_split)
-    difficulty = calculate_difficulty(cooking_time, ingredients)
-    recipe = {
-        "name": name,
-        "cooking_time": cooking_time,
-        "ingredients": ingredients,
-        "difficulty": difficulty,
-    }
+    try:
+        name = str(input("Enter the name of the recipe: "))
+        cooking_time = int(input("Enter the cooking time in minutes: "))
+        ingredients_input = input(
+            "Enter all the ingredients required for the recipe - each one being separated by a comma following by a space (bread, cheese, etc.)): "
+        )
+        ingredients = ingredients_input.split(", ")
+        difficulty = calculate_difficulty(cooking_time, ingredients)
+        recipe = {
+            "name": name,
+            "cooking_time": cooking_time,
+            "ingredients": ingredients,
+            "difficulty": difficulty,
+        }
 
-    sql = "INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s)"
-    val = (name, ingredients, cooking_time, difficulty)
-    cursor.execute(sql, val)
-    conn.commit()
+        sql = "INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s)"
+        # Since MySQL doesn’t fully support arrays, ingredients list needs to be converted into a \
+        # comma-separated string, using .join
+        val = (name, ", ".join(ingredients), cooking_time, difficulty)
+        cursor.execute(sql, val)
+        conn.commit()
 
-    print("-----------------------")
-    last_insert_id = cursor.lastrowid
-    print("The ID of the newly inserted recipe is:", last_insert_id)
-    print("Here is your newly created recipe: " + str(recipe))
-    print("-----------------------")
+        print("-----------------------")
+        last_insert_id = cursor.lastrowid
+        print("The ID of the newly inserted recipe is:", last_insert_id)
+        print("Here is your newly created recipe: " + str(recipe))
+        print("-----------------------")
+
+    except:
+        print("The input is incorrect or something went wrong.")
 
 
 # 2 - Code to search recipes based on ingredients
@@ -122,18 +127,20 @@ def search_recipe(conn, cursor):
         for row in result:
             print(row)
     except:
-        print("The input is incorrect.")
+        print("The input is incorrect or something went wrong.")
 
 
 # 3 - Code to update recipes
 
 
 def update_recipe(conn, cursor):
-
-    cursor.execute("SELECT id, name, ingredients, cooking_time, difficulty FROM Recipes")
+    cursor.execute(
+        "SELECT id, name, ingredients, cooking_time, difficulty FROM Recipes"
+    )
     result = cursor.fetchall()
     for row in result:
-        print("Recipe number: ", row[0]) #This is equal to recipe id, but renamed to by more user-friendly
+        print(
+            "Recipe number: ", row[0])  # This is equal to recipe id, but renamed to by more user-friendly
         print("Name: ", row[1])
         print("Ingredients: ", row[2])
         print("Cooking time (min): ", row[3])
@@ -142,13 +149,17 @@ def update_recipe(conn, cursor):
 
     try:
         print("-----------------------")
-        recipe_selected = int(input("Pick a recipe from the list based on its number: "))
+        recipe_selected = int(
+            input("Pick a recipe from the list based on its number: ")
+        )
         print("-----------------------")
-        print('Field possible to update for that recipe:')
+        print("Field possible to update for that recipe:")
         print("1. Name")
         print("2. Cooking time (min)")
         print("3. Ingredients")
-        field_selected = int(input("Enter the number of the field you would like to update: "))
+        field_selected = int(
+            input("Enter the number of the field you would like to update: ")
+        )
 
         if field_selected == 1:
             updated_name = str(input("Enter the update name for this recipe: "))
@@ -157,17 +168,18 @@ def update_recipe(conn, cursor):
             val = (updated_name, recipe_selected)
             cursor.execute(sql, val)
             conn.commit()
-            
+
             print("Recipe name updated successfully!")
 
         if field_selected == 2:
-
             # First fetch the ingredients for the selected recipe from the database, to be able to pass \
             # them in the calculate_difficulty function call below, as this function require the cooking \
             # time and the ingredients of a recipe to work. This function is called in this block to ensure \
             # that the level of difficulty for a recipe is automatically update if necessary when cooking \
             # time is updated by users.
-            cursor.execute("SELECT ingredients FROM Recipes WHERE id = %s", (recipe_selected,))
+            cursor.execute(
+                "SELECT ingredients FROM Recipes WHERE id = %s", (recipe_selected,)
+            )
             results = cursor.fetchall()
             print(results)
             # When ingredients are fetched from database, they comes in following format: [('ing1, ing2',)] \
@@ -179,7 +191,9 @@ def update_recipe(conn, cursor):
             # and stores them in a list, ensuring it can be passed correctly as an argument to calculate_difficulty
             ingredients = ingredients_string.split(", ")
 
-            updated_cooking_time = int(input("Enter the updated cooking time (in min) for this recipe: "))
+            updated_cooking_time = int(
+                input("Enter the updated cooking time (in min) for this recipe: ")
+            )
             updated_difficulty = calculate_difficulty(updated_cooking_time, ingredients)
 
             sql_cooking_time = "UPDATE Recipes SET cooking_time = %s WHERE id=%s"
@@ -191,17 +205,18 @@ def update_recipe(conn, cursor):
             cursor.execute(sql_difficulty, val_difficulty)
 
             conn.commit()
-            
+
             print("Recipe cooking time updated successfully!")
 
         if field_selected == 3:
-
             # First fetch the cooking time for the selected recipe from the database, to be able to pass \
             # it in the calculate_difficulty function call below, as this function require the cooking \
             # time and the ingredients of a recipe to work. This function is called in this block to ensure \
             # that the level of difficulty for a recipe au automatically update if necessary when \
             # ingredients are updated by users.
-            cursor.execute("SELECT cooking_time FROM Recipes WHERE id = %s", (recipe_selected,))
+            cursor.execute(
+                "SELECT cooking_time FROM Recipes WHERE id = %s", (recipe_selected,)
+            )
             results = cursor.fetchall()
             # When cooking time is fetched from database, it comes in following format: [(-cooking time number,)] \
             # to ensure to pass the cooking time as in integer in the calculate_difficulty function below \
@@ -216,8 +231,9 @@ def update_recipe(conn, cursor):
             updated_difficulty = calculate_difficulty(cooking_time, updated_ingredients)
 
             sql_ingredients = "UPDATE Recipes SET ingredients = %s WHERE id=%s"
-            # .join used to create a comma-separated string that represents the updated list of ingredients
-            val_ingredients = (", ".join(updated_ingredients), recipe_selected) 
+            # Since MySQL doesn’t fully support arrays, your ingredients list needs to be converted into a \
+            # comma-separated string, using .join
+            val_ingredients = (", ".join(updated_ingredients), recipe_selected)
             cursor.execute(sql_ingredients, val_ingredients)
 
             sql_difficulty = "UPDATE Recipes SET difficulty = %s WHERE id=%s"
@@ -225,14 +241,48 @@ def update_recipe(conn, cursor):
             cursor.execute(sql_difficulty, val_difficulty)
 
             conn.commit()
-            
-            print("Recipe cooking time updated successfully!")
+
+            print("Recipe ingredients updated successfully!")
 
     except:
         print("The input is incorrect or something went wrong.")
 
-# def delete_recipe(conn, cursor):
 
+# 4 - Code to delete recipes
+
+
+def delete_recipe(conn, cursor):
+    cursor.execute(
+        "SELECT id, name, ingredients, cooking_time, difficulty FROM Recipes"
+    )
+    result = cursor.fetchall()
+    for row in result:
+        print(
+            "Recipe number: ", row[0])  # This is equal to recipe id, but renamed to by more user-friendly
+        print("Name: ", row[1])
+        print("Ingredients: ", row[2])
+        print("Cooking time (min): ", row[3])
+        print("Difficulty:", row[4])
+        print()
+
+    try:
+        print("-----------------------")
+        recipe_selected = int(
+            input("Pick a recipe to delete from the list based on its number: ")
+        )
+
+        sql = "DELETE FROM Recipes WHERE id=%s"
+        val = (recipe_selected,)
+        cursor.execute(sql, val)
+        conn.commit()
+
+        print("Recipe deleted successfully!")
+
+    except:
+        print("The input is incorrect or something went wrong.")
+
+
+# Code to display the main menu to user
 
 
 def main_menu():
