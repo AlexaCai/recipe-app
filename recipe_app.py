@@ -21,7 +21,7 @@ class Recipe(Base):
     difficulty = Column(String(20))
 
     def __repr__(self):
-        return "<Recipe ID: " + str(self.id) + "-" + self.name + "-" + self.difficulty + ">"
+        return "<Recipe ID: " + str(self.id) + "- recipe name: " + self.name + "- recipe difficulty: " + self.difficulty + ">"
 
     # Method to print a well-formatted version of the recipe
     def __str__(self):
@@ -62,33 +62,33 @@ class Recipe(Base):
 Base.metadata.create_all(engine)
 
 def create_recipe():
-    # try:
-
+    try:
 
         #Name the recipe
         name = str(input("Enter the name of the recipe: "))
         name_line = name
 
         while not name_line.strip() or not name_line.replace(" ", "").isalnum() or len(name_line) > 50:
-            # Ensure the field is not empty
             if not name_line.strip():
                 print("-" * 25)
                 print("You must enter a value in this field (cannot stay empty). Please add a recipe name.")
                 print("-" * 25)
                 name_line = input("Enter the name of the recipe: ")
+                name = name_line
             # Ensure the field only contains alpa. character (with exception for spaces, which are allowed)
             elif not name_line.replace(" ", "").isalnum():
                 print("-" * 25)
                 print("You must enter an alphanumeric character in this field. Please update your recipe name.")
                 print("-" * 25)
                 name_line = input("Enter the name of the recipe: ")
+                name = name_line
             # Ensure the recipe name is 50 or less characters
             elif len(name_line) > 50:
                 print("-"*25)
                 print("A maximum of 50 characters is allowed for a recipe's name. Please reduce the length of your recipe's name.")
                 print("-"*25)
                 name_line = input("Enter the name of the recipe: ")
-                
+                name = name_line
 
         #Choosing the cooking time in minutes
         cooking_time = input("Enter the cooking time in minutes: ")
@@ -184,10 +184,13 @@ def create_recipe():
 
         print(recipe_entry)
 
-        # session.add(recipe_entry)
-        # session.commit()
+        session.add(recipe_entry)
+        session.commit()
 
-    # except:
-    #     print("Something went wrong.")
+    except:
+        print("Something went wrong.")
+
+
+
 
 create_recipe()
