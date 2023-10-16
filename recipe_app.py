@@ -213,6 +213,13 @@ def view_all_recipes():
         else:
             for recipe in recipes_list:
                 print(recipe) 
+        
+        next_action = input("When you want to back to main menu, simply type 'back': ").lower()
+        while next_action != 'back':
+            next_action = input("Seems like there's a typo. Type 'back' to return to main menu: ").lower()
+
+        if next_action == 'back':
+                return None
 
     except:
         print("Something went wrong.")
