@@ -139,7 +139,7 @@ def create_recipe():
         for items in range(int(number_of_ingredients)):
                 ingredients_input = input("Enter the ingredient: ")
 
-                while not ingredients_input.strip() or not ingredients_input.replace(" ", "").isalnum() or len(ingredients_input) > 50 or ingredients_input in ingredients:
+                while not ingredients_input.strip() or not ingredients_input.replace(" ", "").isalnum() or len(ingredients_input) > 255 or ingredients_input in ingredients:
                     # Ensure the field is not empty
                     if not ingredients_input.strip():
                         print("-" * 25)
@@ -295,7 +295,7 @@ def search_by_ingredients():
 
 def edit_recipe():
     # try:
-
+     
         recipes_list = session.query(Recipe).all()
 
         if not recipes_list:
@@ -311,8 +311,6 @@ def edit_recipe():
                 recipe_name = recipe.name
                 results.append((recipe_id, recipe_name))
             
-            print(results)
-
             # Retrieve each recipe from the database based on the recipes' id stored in the results variable \
             # All avaialble recipe are displayed to users
             for recipe in results:
@@ -356,6 +354,7 @@ def edit_recipe():
         print("2. Cooking time (min): ", recipe_to_edit.cooking_time)
         print("3. Ingredients: ", recipe_to_edit.ingredients)
         print("-"*25)
+
         edit_number_chosen = input("Enter the number associated with the field you would like to update: ")
 
         while not edit_number_chosen.strip() or edit_number_chosen.isnumeric() != True or not 0 < int(edit_number_chosen) <= 3:
@@ -378,73 +377,190 @@ def edit_recipe():
                 edit_number_chosen = input("Your number: ")
 
         if int(edit_number_chosen) == 1:
-            updated_name = input("Enter the new name for the recipe: ")
+                updated_name = input("Enter the new/updated name for the recipe: ")
 
-            while not updated_name.strip() or not updated_name.replace(" ", "").isalnum() or len(updated_name) > 50:
-                if not updated_name.strip():
-                    print("-" * 25)
-                    print("You must enter a value in this field (cannot stay empty). Please add a recipe name.")
-                    print("-" * 25)
-                    updated_name = input("Enter the new name for the recipe: ")
-                # Ensure the field only contains alpa. characters (with exception for spaces, which are allowed)
-                elif not updated_name.replace(" ", "").isalnum():
-                    print("-" * 25)
-                    print("You must enter an alphanumeric character in this field. Please update your recipe name.")
-                    print("-" * 25)
-                    updated_name = input("Enter the new name for the recipe: ")
-                # Ensure the recipe name is 50 or less characters
-                elif len(updated_name) > 50:
-                    print("-"*25)
-                    print("A maximum of 50 characters is allowed for a recipe's name. Please reduce the length of your recipe's name.")
-                    print("-"*25)
-                    updated_name = input("Enter the new name for the recipe: ")
+                while not updated_name.strip() or not updated_name.replace(" ", "").isalnum() or len(updated_name) > 50:
+                    if not updated_name.strip():
+                        print("-" * 25)
+                        print("You must enter a value in this field (cannot stay empty). Please add a recipe name.")
+                        print("-" * 25)
+                        updated_name = input("Enter the new/updated name for the recipe: ")
+                    # Ensure the field only contains alpa. characters (with exception for spaces, which are allowed)
+                    elif not updated_name.replace(" ", "").isalnum():
+                        print("-" * 25)
+                        print("You must enter an alphanumeric character in this field. Please update your recipe name.")
+                        print("-" * 25)
+                        updated_name = input("Enter the new/updated name for the recipe: ")
+                    # Ensure the recipe name is 50 or less characters
+                    elif len(updated_name) > 50:
+                        print("-"*25)
+                        print("A maximum of 50 characters is allowed for a recipe's name. Please reduce the length of your recipe's name.")
+                        print("-"*25)
+                        updated_name = input("Enter the new/updated name for the recipe: ")
 
-            print("Recipe name " + updated_name + " updated successfully!")
+                print("Recipe name " + updated_name + " updated successfully!")
 
-            recipe_to_edit.name = updated_name
-            print("-"*25)
-            print("Here's your newly updated recipe.")
-            print(recipe_to_edit)
+                recipe_to_edit.name = updated_name
+                print("-"*25)
+                print("Here's your newly updated recipe.")
+                print(recipe_to_edit)
 
-            # session.add(recipe_entry)
-            # session.commit()
+                # Commit the change in the database
+                session.add(recipe_to_edit)
+                session.commit()
+
+                # Ask user what that wanna do next
+                next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+                while next_action not in ['1', '2']:
+                    print('Your answer must be 1 or 2, please enter a correct input')
+                    next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                if next_action == '1':
+                    edit_recipe()  
+                elif next_action == '2':
+                    return  
+
 
         elif int(edit_number_chosen) == 2:
-            updated_cooking_time = input("Enter the new cooking time for the recipe: ")
+                updated_cooking_time = input("Enter the new/updated cooking time for the recipe: ")
 
-            while not updated_cooking_time.strip() or updated_cooking_time.isnumeric() != True:
+                while not updated_cooking_time.strip() or updated_cooking_time.isnumeric() != True:
+                    # Ensure the field is not empty
+                    if not updated_cooking_time.strip():
+                        print("-" * 25)
+                        print("You must enter a value in this field (cannot stay empty). Please add the recipe cooking time in minutes.")
+                        print("-" * 25)
+                        updated_cooking_time = input("Enter the new/updated cooking time for the recipe: ")
+                    # Ensure only number are added in this field
+                    elif updated_cooking_time.isnumeric() != True:
+                        print("-"*25)
+                        print("Only numbers are accepted in this field, please update your entry for a number.")
+                        print("-"*25)
+                        updated_cooking_time = input("Enter the new/updated cooking time for the recipe: ")
+
+                recipe_to_edit.cooking_time = int(updated_cooking_time)
+                print("Recipe cooking time " + str(updated_cooking_time) + " min updated successfully!")
+
+                # From the recipe within recipe_to_edit, retrieve the updated cooking time and the ingredients to \
+                # pass them as argument in calculate_difficulty to recalculte recipe difficulty level that might \
+                # have change depending on the new cooking time.
+
+                # Note: return_ingredients_as_list() in recipe_to_edit.return_ingredients_as_list() is a method \
+                # defined in the Recipe class at the beginning of the file, which allow to return the list of \
+                # ingredients from a string.
+                updated_difficulty = recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, recipe_to_edit.return_ingredients_as_list())
+                recipe_to_edit.difficulty = updated_difficulty
+
+                print("-"*25)
+                print("Here's your newly updated recipe:")
+                print(recipe_to_edit)
+
+                # Commit the change in the database
+                session.add(recipe_to_edit)
+                session.commit()
+
+                # Ask user what that wanna do next
+                next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+                while next_action not in ['1', '2']:
+                    print('Your answer must be 1 or 2, please enter a correct input')
+                    next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                if next_action == '1':
+                    edit_recipe()  
+                elif next_action == '2':
+                    return  
+
+
+        elif int(edit_number_chosen) == 3:
+                print("-"*25)
+                print("What would you like to do?")
+                print("1. Remove existing ingredient(s) ")
+                print("2. Add a new ingredients to the existing ingredients ")
+                print("3. Replace the whole list of ingredients with a new list. ")
+                print("-"*25)
+                edit_number_chosen = input("Enter the number associated with the field you would like to update: ")
+
+                while not edit_number_chosen.strip() or edit_number_chosen.isnumeric() != True or not 0 < int(edit_number_chosen) <= 3:
                 # Ensure the field is not empty
-                if not updated_cooking_time.strip():
-                    print("-" * 25)
-                    print("You must enter a value in this field (cannot stay empty). Please add the recipe cooking time in minutes.")
-                    print("-" * 25)
-                    updated_cooking_time = input("Enter the new cooking time for the recipe: ")
-                # Ensure only number are added in this field
-                elif updated_cooking_time.isnumeric() != True:
-                    print("-"*25)
-                    print("Only numbers are accepted in this field, please update your entry for a number.")
-                    print("-"*25)
-                    updated_cooking_time = input("Enter the new cooking time for the recipe: ")
+                    if not edit_number_chosen.strip():
+                        print("-" * 25)
+                        print("You must enter a value in this field (cannot stay empty). Please add the number associated with the field you would like to update.")
+                        print("-" * 25)
+                        edit_number_chosen = input("Your number: ")
+                    # Ensure only number are added in this field
+                    elif edit_number_chosen.isnumeric() != True:
+                        print("-"*25)
+                        print("Only numbers are accepted in this field. Please add the number associated with the field you would like to update.")
+                        print("-"*25)
+                        edit_number_chosen = input("Your number: ")
+                    elif not 0 < int(edit_number_chosen) <= 3:
+                        print("-"*25)
+                        print("The number you entered is not within the range of the available number. Please pick a number from 1 to 3. ")
+                        print("-"*25)
+                        edit_number_chosen = input("Your number: ")
 
-            recipe_to_edit.cooking_time = int(updated_cooking_time)
-            print("Recipe name " + str(updated_cooking_time) + " updated successfully!")
+                while True:
+                    if int(edit_number_chosen) == 1:
+                            if recipe_to_edit.ingredients == '':
+                                print("There's no ingredients to remove. You'll be brought back to the main recipes update view.")
+                                edit_recipe()
+                            else:
+                                # Show to users all ingredients that can be removed
+                                print("-"*25)
+                                print("Here are the recipe' ingredients")
+                                ingredients_list = recipe_to_edit.return_ingredients_as_list()
+                                ingredient = sorted(recipe_to_edit.ingredients)
+                                for index, ingredient in enumerate(recipe_to_edit.return_ingredients_as_list(), start=1):
+                                    print(str(index) + ". " + ingredient)
+                                ingredient_number_to_remove = input("Enter the number associated with the ingreidient you would like to remove: ")
 
-            # From the recipe within recipe_to_edit, retrieve the updated cooking time and the ingredients to \
-            # pass them as argument in calculate_difficulty to recalculte recipe difficulty level that might \
-            # have change depending on the new cooking time.
-            
-            # Note: return_ingredients_as_list() in recipe_to_edit.return_ingredients_as_list() is a method \
-            # defined in the Recipe class at the beginning of the file, which allow to return the list of \
-            # ingredients from a string.
-            updated_difficulty = recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, recipe_to_edit.return_ingredients_as_list())
-            recipe_to_edit.difficulty = updated_difficulty
+                                # Remove the ingredient picked by users
+                                removed_ingredient = ingredients_list.pop(int(ingredient_number_to_remove) - 1)
+                                recipe_to_edit.ingredients = ", ".join(ingredients_list)  # Update the ingredients string
+                                print(removed_ingredient + ' has been deleted.')
 
-            print("-"*25)
-            print("Here's your newly updated recipe:")
-            print(recipe_to_edit)
+                                # Update the difficulty level if necessary based on the ingredients changes
+                                updated_difficulty = recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, recipe_to_edit.return_ingredients_as_list())
+                                recipe_to_edit.difficulty = updated_difficulty
+                                print(recipe_to_edit)
 
-            # session.add(recipe_entry)
-            # session.commit()
+                                # session.add(recipe_entry)
+                                # session.commit()
 
-    # except:
-    #     print("Something went wrong.")
+                                # Ask the user what he wants to do now
+                                another_action = input("Do you want to remove another ingredient? Enter yes or no: ").lower()                        
+                                while another_action not in ['yes', 'no']:
+                                    print('Your answer must be yes or no, please enter a correct input')
+                                    another_action = input("Do you want to remove another ingredient? Enter yes or no: ")
+
+                                if another_action == 'yes':
+                                    continue
+                                elif another_action == 'no':
+                                        print('print somehting')
+                                        next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                                        while next_action not in ['1', '2']:
+                                            print('Your answer must be 1 or 2, please enter a correct input')
+                                            next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                                        if next_action == '1':
+                                            edit_recipe()
+                                        elif next_action == '2':
+                                            return
+
+
+        
+                
+
+
+
+                    
+
+edit_recipe()
+    #                         if recipe_to_delete:
+    #                         # Delete the recipe (ingredient) from the database
+    #                         # session.delete(recipe_to_delete)
+    #                         # session.commit()
+
+    # # except:
+    # #     print("Something went wrong.")
