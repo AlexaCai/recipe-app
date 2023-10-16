@@ -27,6 +27,7 @@ class Recipe(Base):
     def __str__(self):
         output = (
             "-" * 10 + "\n" +
+            "Recipe id: " + str(self.id) + "\n" +
             "Name of the recipe: " + str(self.name) + "\n" +
             "Cooking time (min): " + str(self.cooking_time) + "\n" +
             "Ingredients: " + str(self.ingredients) + "\n" +
@@ -197,6 +198,7 @@ def create_recipe():
 
 
 def view_all_recipes():
+
     try:
         recipes_list = session.query(Recipe).all()
         if not recipes_list:
@@ -211,7 +213,8 @@ def view_all_recipes():
 
 
 def search_by_ingredients():
-    # try:
+
+    try:
         recipes_list = session.query(Recipe).count()
         all_ingredients = []
 
@@ -232,8 +235,8 @@ def search_by_ingredients():
             print(str(index) + ". " + ingredient)
             
         # Used to calculate to maximum (or higher) number associated with an ingredient in the list shown \
-        # to users. This is later used to ensure used select a number associated with an ingredients that \
-        # is within the existing range of numbers    
+        # to users. This is later used to ensure users select a number associated with an ingredients that \
+        # is within the existing range of numbers displayed on their UI  
         max_index = max(range(1, len(ingredients) + 1))
 
         print("-----------------------")
@@ -270,17 +273,178 @@ def search_by_ingredients():
             condition = Recipe.ingredients.like(like_term)
             conditions.append(condition) 
 
-        related_recipes = []
-
-        for condition in conditions:
-            recipes = session.query(Recipe).filter(*condition).all()
-            print(recipes)
-
+        print("-" * 25)
+        print("Here are all the recipes containning the ingredients you've searched with. If you want more results, consider reducing the ingredients in your search.")
+        related_recipes = session.query(Recipe).filter(*conditions).all()
+        print("-----------------------")
         for recipe in related_recipes:
-            print(recipe)
+            print(recipe) 
 
+        # To display all recipes containing at least one searched ingredient
+        # related_recipes = []
 
-search_by_ingredients()
+        # for condition in conditions:
+        #     recipes = session.query(Recipe).filter(condition).all()
+        #     print(recipes)
+
+        # for recipe in related_recipes:
+        #     print(recipe)
+
+    except:
+        print("Something went wrong.")
+
+def edit_recipe():
+    # try:
+
+        recipes_list = session.query(Recipe).all()
+
+        if not recipes_list:
+            print("There are no recipes in the database, you'll therefore be brought back to the main menu.")
+            return None
+        
+        else:
+            results = []
+
+            # Extract the ID and name of each recipe, and stored this in results variables
+            for recipe in recipes_list:
+                recipe_id = recipe.id
+                recipe_name = recipe.name
+                results.append((recipe_id, recipe_name))
+            
+            print(results)
+
+            # Retrieve each recipe from the database based on the recipes' id stored in the results variable \
+            # All avaialble recipe are displayed to users
+            for recipe in results:
+                recipe_id = recipe[0]  
+                related_recipes = session.query(Recipe).filter(Recipe.id == recipe_id).all()
+                for recipe in related_recipes:
+                    print(recipe) 
+
+            # Used to calculate to maximum (or higher) id associated with recipe in the list shown to users \
+            # This is later used to ensure users select an id associated with a recipe that is within the \
+            # the existing range of id displayed on their UI  
+            highest_id = max(recipe[0] for recipe in results)
+
+        print("-----------------------")
+        recipe_id_picked = input(" Enter the id number associated with the recipe you would like to update: ")
+
+        while not recipe_id_picked.strip() or recipe_id_picked.isnumeric() != True or int(recipe_id_picked) == 0 or int(recipe_id_picked) > highest_id:
+            # Ensure the field is not empty
+            if not recipe_id_picked.strip():
+                print("-" * 25)
+                print("You must enter a value in this field (cannot stay empty). Please add the id number associated with the recipe you would like to update.")
+                print("-" * 25)
+                recipe_id_picked = input("Your number(s): ")
+            # Ensure only number are added in this field
+            elif recipe_id_picked.isnumeric() != True:
+                print("-"*25)
+                print("Only numbers are accepted in this field. Please add the id number associated with the recipe you would like to update.")
+                print("-"*25)
+                recipe_id_picked = input("Your number(s): ")
+            elif int(recipe_id_picked) == 0 or int(recipe_id_picked) > highest_id:
+                print("-"*25)
+                print("The number you entered is not within the range of the available id number(s). You'll be brought back to the main menu. ")
+                print("-"*25)
+                return None
+
+        # Retrieve from the database the recipe to be updated based on the recipe id picked by users
+        recipe_to_edit = session.query(Recipe).get(int(recipe_id_picked))
+        print("-"*25)
+        print("Fields that can be updated:")
+        print("1. Name of the recipe: ", recipe_to_edit.name)
+        print("2. Cooking time (min): ", recipe_to_edit.cooking_time)
+        print("3. Ingredients: ", recipe_to_edit.ingredients)
+        print("-"*25)
+        edit_number_chosen = input("Enter the number associated with the field you would like to update: ")
+
+        while not edit_number_chosen.strip() or edit_number_chosen.isnumeric() != True or not 0 < int(edit_number_chosen) <= 3:
+            # Ensure the field is not empty
+            if not edit_number_chosen.strip():
+                print("-" * 25)
+                print("You must enter a value in this field (cannot stay empty). Please add the number associated with the field you would like to update.")
+                print("-" * 25)
+                edit_number_chosen = input("Your number: ")
+            # Ensure only number are added in this field
+            elif edit_number_chosen.isnumeric() != True:
+                print("-"*25)
+                print("Only numbers are accepted in this field. Please add the number associated with the field you would like to update.")
+                print("-"*25)
+                edit_number_chosen = input("Your number: ")
+            elif not 0 < int(edit_number_chosen) <= 3:
+                print("-"*25)
+                print("The number you entered is not within the range of the available number. Please pick a number from 1 to 3. ")
+                print("-"*25)
+                edit_number_chosen = input("Your number: ")
+
+        if int(edit_number_chosen) == 1:
+            updated_name = input("Enter the new name for the recipe: ")
+
+            while not updated_name.strip() or not updated_name.replace(" ", "").isalnum() or len(updated_name) > 50:
+                if not updated_name.strip():
+                    print("-" * 25)
+                    print("You must enter a value in this field (cannot stay empty). Please add a recipe name.")
+                    print("-" * 25)
+                    updated_name = input("Enter the new name for the recipe: ")
+                # Ensure the field only contains alpa. characters (with exception for spaces, which are allowed)
+                elif not updated_name.replace(" ", "").isalnum():
+                    print("-" * 25)
+                    print("You must enter an alphanumeric character in this field. Please update your recipe name.")
+                    print("-" * 25)
+                    updated_name = input("Enter the new name for the recipe: ")
+                # Ensure the recipe name is 50 or less characters
+                elif len(updated_name) > 50:
+                    print("-"*25)
+                    print("A maximum of 50 characters is allowed for a recipe's name. Please reduce the length of your recipe's name.")
+                    print("-"*25)
+                    updated_name = input("Enter the new name for the recipe: ")
+
+            print("Recipe name " + updated_name + " updated successfully!")
+
+            recipe_to_edit.name = updated_name
+            print("-"*25)
+            print("Here's your newly updated recipe.")
+            print(recipe_to_edit)
+
+            # session.add(recipe_entry)
+            # session.commit()
+
+        elif int(edit_number_chosen) == 2:
+            updated_cooking_time = input("Enter the new cooking time for the recipe: ")
+
+            while not updated_cooking_time.strip() or updated_cooking_time.isnumeric() != True:
+                # Ensure the field is not empty
+                if not updated_cooking_time.strip():
+                    print("-" * 25)
+                    print("You must enter a value in this field (cannot stay empty). Please add the recipe cooking time in minutes.")
+                    print("-" * 25)
+                    updated_cooking_time = input("Enter the new cooking time for the recipe: ")
+                # Ensure only number are added in this field
+                elif updated_cooking_time.isnumeric() != True:
+                    print("-"*25)
+                    print("Only numbers are accepted in this field, please update your entry for a number.")
+                    print("-"*25)
+                    updated_cooking_time = input("Enter the new cooking time for the recipe: ")
+
+            recipe_to_edit.cooking_time = int(updated_cooking_time)
+            print("Recipe name " + str(updated_cooking_time) + " updated successfully!")
+
+            # From the recipe within recipe_to_edit, retrieve the updated cooking time and the ingredients to \
+            # pass them as argument in calculate_difficulty to recalculte recipe difficulty level that might \
+            # have change depending on the new cooking time.
+            
+            # Note: return_ingredients_as_list() in recipe_to_edit.return_ingredients_as_list() is a method \
+            # defined in the Recipe class at the beginning of the file, which allow to return the list of \
+            # ingredients from a string.
+            updated_difficulty = recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, recipe_to_edit.return_ingredients_as_list())
+            recipe_to_edit.difficulty = updated_difficulty
+
+            print("-"*25)
+            print("Here's your newly updated recipe:")
+            print(recipe_to_edit)
+
+            # session.add(recipe_entry)
+            # session.commit()
 
     # except:
     #     print("Something went wrong.")
