@@ -264,15 +264,21 @@ def search_by_ingredients():
 
         conditions = []
 
-        # Initialize an empty list called conditions
         for ingredient in search_ingredient:
-            like_term = "%" + ingredient + "%"  # Make a search string with % on both sides
-            condition = Recipe.ingredients.like(like_term)  # Create a like condition for the ingredient
-            conditions.append(condition)  # Append the condition to the conditions list
+            print(ingredient)
+            like_term = "%" + ingredient + "%"  
+            condition = Recipe.ingredients.like(like_term)
+            conditions.append(condition) 
 
-        related_recipes = session.query(Recipe).filter(*conditions)
+        related_recipes = []
+
+        for condition in conditions:
+            recipes = session.query(Recipe).filter(*condition).all()
+            print(recipes)
+
         for recipe in related_recipes:
             print(recipe)
+
 
 search_by_ingredients()
 
