@@ -36,7 +36,6 @@ class Recipe(Base):
         )
         return output
     
-    # Method to calculate difficulty of a recipe
     def calculate_difficulty(self, cooking_time, ingredients):
         if cooking_time < 10 and len(ingredients) < 4:
             self.difficulty = "easy"
@@ -62,10 +61,11 @@ class Recipe(Base):
 Base.metadata.create_all(engine)
 
 
+# First function
 def create_recipe():
     try:
 
-        #Name the recipe
+        # Creating the recipe name
         name = str(input("Enter the name of the recipe: "))
         name_line = name
 
@@ -83,7 +83,6 @@ def create_recipe():
                 print("-" * 25)
                 name_line = input("Enter the name of the recipe: ")
                 name = name_line
-            # Ensure the recipe name is 50 or less characters
             elif len(name_line) > 50:
                 print("-"*25)
                 print("A maximum of 50 characters is allowed for a recipe's name. Please reduce the length of your recipe's name.")
@@ -94,19 +93,17 @@ def create_recipe():
         print("Recipe name added successfully!")
 
 
-        #Choosing the cooking time in minutes
+        # Choosing the cooking time in minutes
         cooking_time = input("Enter the cooking time in minutes: ")
         cooking_time_line = cooking_time
 
         while not cooking_time_line.strip() or cooking_time_line.isnumeric() != True:
-            # Ensure the field is not empty
             if not cooking_time_line.strip():
                 print("-" * 25)
                 print("You must enter a value in this field (cannot stay empty). Please add the recipe cooking time in minutes.")
                 print("-" * 25)
                 cooking_time_line = input("Enter the cooking time in minutes: ")
                 cooking_time = cooking_time_line
-            # Ensure only number are added in this field
             elif cooking_time_line.isnumeric() != True:
                 print("-"*25)
                 print("Only numbers are accepted in this field, please update your entry for a number.")
@@ -117,19 +114,18 @@ def create_recipe():
         print("Recipe cooking time added successfully!")
 
 
-        #Add the ingredients
+        # Add the recipe ingredients
         ingredients = []
 
         number_of_ingredients = input("Enter how many ingredient(s) you would like to add to your recipe: ")
 
+        # First check the number selected by users is ok
         while not number_of_ingredients.strip() or number_of_ingredients.isnumeric() != True:
-            # Ensure the field is not empty
             if not number_of_ingredients.strip():
                 print("-" * 25)
                 print("You must enter a value in this field (cannot stay empty). Please add the number of ingredient(s) you want to add for your recipe.")
                 print("-" * 25)
                 number_of_ingredients = input("Enter how many ingredient(s) you would like to add to your recipe: ")
-            # Ensure only number are added in this field
             elif number_of_ingredients.isnumeric() != True:
                 print("-"*25)
                 print("Only numbers are accepted in this field, please update your entry for a number.")
@@ -139,8 +135,8 @@ def create_recipe():
         for items in range(int(number_of_ingredients)):
                 ingredients_input = input("Enter the ingredient (one at a time): ")
 
+                # Second check if the ingredients entered by users are ok
                 while not ingredients_input.strip() or not ingredients_input.replace(" ", "").isalnum() or len(ingredients_input) > 255 or ingredients_input in ingredients:
-                    # Ensure the field is not empty
                     if not ingredients_input.strip():
                         print("-" * 25)
                         print("You must enter a value in this field (cannot stay empty). Please add the ingredient name.")
@@ -152,7 +148,6 @@ def create_recipe():
                         print("You must enter an alphanumeric character in this field. Please update your ingredient name.")
                         print("-" * 25)
                         ingredients_input = input("Enter the ingredient (one at a time): ")
-                    # Ensure the ingredient name is 255 or less characters
                     elif len(ingredients_input) > 255:
                         print("-----------------------")
                         print("A maximum of 255 characters is allowed for a recipe's ingredient. Please reduce the number of characters of your ingredient that exceed this length.")
@@ -172,7 +167,7 @@ def create_recipe():
                 ingredients_string = ", ".join(ingredients)
                 
 
-        #C alulcate the difficulty based on cooking time and ingredients
+        # Calulcate the difficulty based on cooking time and ingredients.
         # By creating an instance of the Recipe class, we can call the calculate_difficulty method on that \
         # instance and set the difficulty attribute specifically for the recipe created by the user. 
         # Recipe_instance is a placeholder that helps calculate/accessing calculate_difficulty function \
@@ -180,7 +175,7 @@ def create_recipe():
         recipe_instance = Recipe()
         difficulty = recipe_instance.calculate_difficulty(int(cooking_time), ingredients)
 
-        #### Creating a new object from the Recipe model called recipe_entry using the details above
+        # Creating a new object from the Recipe model called recipe_entry using the details above
         recipe_entry = Recipe(
             name = name,
             cooking_time = int(cooking_time),
@@ -196,6 +191,7 @@ def create_recipe():
         print("Difficulty: ", recipe_entry.difficulty)
         print("-"*25)
 
+        # Ensure recipe created is commit / pushed to the database
         session.add(recipe_entry)
         session.commit()
 
