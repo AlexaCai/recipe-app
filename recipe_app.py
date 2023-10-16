@@ -137,7 +137,7 @@ def create_recipe():
                 number_of_ingredients = input("Enter how many ingredient(s) you would like to add to your recipe: ")
 
         for items in range(int(number_of_ingredients)):
-                ingredients_input = input("Enter the ingredient: ")
+                ingredients_input = input("Enter the ingredient (one at a time): ")
 
                 while not ingredients_input.strip() or not ingredients_input.replace(" ", "").isalnum() or len(ingredients_input) > 255 or ingredients_input in ingredients:
                     # Ensure the field is not empty
@@ -145,24 +145,24 @@ def create_recipe():
                         print("-" * 25)
                         print("You must enter a value in this field (cannot stay empty). Please add the ingredient name.")
                         print("-" * 25)
-                        ingredients_input = input("Enter the name of the recipe: ")
+                        ingredients_input = input("Enter the ingredient (one at a time): ")
                     # Ensure the field only contains alpa. character (with exception for spaces, which are allowed)
                     elif not ingredients_input.replace(" ", "").isalnum():
                         print("-" * 25)
                         print("You must enter an alphanumeric character in this field. Please update your ingredient name.")
                         print("-" * 25)
-                        ingredients_input = input("Enter the name of the recipe: ")
+                        ingredients_input = input("Enter the ingredient (one at a time): ")
                     # Ensure the ingredient name is 255 or less characters
                     elif len(ingredients_input) > 255:
                         print("-----------------------")
                         print("A maximum of 255 characters is allowed for a recipe's ingredient. Please reduce the number of characters of your ingredient that exceed this length.")
                         print("-----------------------")
-                        ingredients_input = input("Enter the name of the recipe: ")
+                        ingredients_input = input("Enter the ingredient (one at a time): ")
                     elif ingredients_input in ingredients:
                         print("-----------------------")
                         print(ingredients_input + " is already in the list, choose another ingredient.")
                         print("-----------------------")
-                        ingredients_input = input("Enter the name of the recipe: ")
+                        ingredients_input = input("Enter the ingredient (one at a time): ")
 
                 if len(ingredients_input) <= 255:
                     if ingredients_input not in ingredients:
@@ -188,10 +188,16 @@ def create_recipe():
             difficulty = difficulty
         )
 
-        print(recipe_entry)
+        print("-"*25)
+        print("Here's your newly created recipe:")
+        print("Name of the recipe: ", recipe_entry.name)
+        print("Cooking time (min): ", recipe_entry.cooking_time)
+        print("Ingredients: ", recipe_entry.ingredients)
+        print("Difficulty: ", recipe_entry.difficulty)
+        print("-"*25)
 
-        # session.add(recipe_entry)
-        # session.commit()
+        session.add(recipe_entry)
+        session.commit()
 
     except:
         print("Something went wrong.")
@@ -294,7 +300,7 @@ def search_by_ingredients():
         print("Something went wrong.")
 
 def edit_recipe():
-    # try:
+    try:
      
         recipes_list = session.query(Recipe).all()
 
@@ -548,19 +554,188 @@ def edit_recipe():
                                         elif next_action == '2':
                                             return
 
+                    if int(edit_number_chosen) == 2:
+                            if recipe_to_edit.ingredients == '':
+                                print("There's no ingredients to remove. You'll be brought back to the main recipes update view.")
+                                edit_recipe()
+                            else:
+                                # Show to users all ingredients that can be removed
+                                print("-"*25)
+                                print("Here are the recipe' ingredients")
+                                ingredients_list = recipe_to_edit.return_ingredients_as_list()
+                                ingredient = sorted(recipe_to_edit.ingredients)
+                                for index, ingredient in enumerate(recipe_to_edit.return_ingredients_as_list(), start=1):
+                                    print(str(index) + ". " + ingredient)
+                                added_ingredient = input("Enter the ingredient you would like to add: ")
 
+                                ingredients_list.append(added_ingredient)
+                                recipe_to_edit.ingredients = ", ".join(ingredients_list)  # Update the ingredients string
+                                print(added_ingredient + ' has been added.')
+
+                                # Update the difficulty level if necessary based on the ingredients changes
+                                updated_difficulty = recipe_to_edit.calculate_difficulty(recipe_to_edit.cooking_time, recipe_to_edit.return_ingredients_as_list())
+                                recipe_to_edit.difficulty = updated_difficulty
+                                print(recipe_to_edit)
+
+                                session.add(recipe_to_edit)
+                                session.commit()
+
+                                # Ask the user what he wants to do now
+                                another_action = input("Do you want to add another ingredient? Enter yes or no: ").lower()                        
+                                while another_action not in ['yes', 'no']:
+                                    print('Your answer must be yes or no, please enter a correct input')
+                                    another_action = input("Do you want to add another ingredient? Enter yes or no: ")
+
+                                if another_action == 'yes':
+                                    continue
+                                elif another_action == 'no':
+                                        print('print somehting')
+                                        next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                                        while next_action not in ['1', '2']:
+                                            print('Your answer must be 1 or 2, please enter a correct input')
+                                            next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                                        if next_action == '1':
+                                            edit_recipe()
+                                        elif next_action == '2':
+                                            return
+    except:
+        print("Something went wrong.")
+
+def delete_recipe():
+    try:
+     
+        recipes_list = session.query(Recipe).all()
+
+        if not recipes_list:
+            print("There are no recipes in the database, you'll therefore be brought back to the main menu.")
+            return None
         
-                
+        else:
 
+            results = []
 
+            # Extract the ID and name of each recipe, and stored this in results variables
+            for recipe in recipes_list:
+                recipe_id = recipe.id
+                recipe_name = recipe.name
+                results.append((recipe_id, recipe_name))
+            
+            # Retrieve each recipe from the database based on the recipes' id stored in the results variable \
+            # All avaialble recipe are displayed to users
+            for recipe in results:
+                recipe_id = recipe[0]  
+                related_recipes = session.query(Recipe).filter(Recipe.id == recipe_id).all()
+                for recipe in related_recipes:
+                    print(recipe) 
 
+            # Used to calculate to maximum (or higher) id associated with recipe in the list shown to users \
+            # This is later used to ensure users select an id associated with a recipe that is within the \
+            # the existing range of id displayed on their UI  
+            existing_recipe_ids = [recipe.id for recipe in session.query(Recipe.id).all()]
+
+            print("-----------------------")
+            recipe_id_picked = input(" Enter the id number associated with the recipe you would like to delete: ")
+
+            while not recipe_id_picked.strip() or recipe_id_picked.isnumeric() != True or int(recipe_id_picked) not in existing_recipe_ids:
+                # Ensure the field is not empty
+                if not recipe_id_picked.strip():
+                    print("-" * 25)
+                    print("You must enter a value in this field (cannot stay empty). Please add the id number associated with the recipe you would like to delete.")
+                    print("-" * 25)
+                    recipe_id_picked = input("Your number(s): ")
+                # Ensure only number are added in this field
+                elif recipe_id_picked.isnumeric() != True:
+                    print("-"*25)
+                    print("Only numbers are accepted in this field. Please add the id number associated with the recipe you would like to delete.")
+                    print("-"*25)
+                    recipe_id_picked = input("Your number(s): ")
+                elif int(recipe_id_picked) not in existing_recipe_ids:
+                    print("-"*25)
+                    print("The number you entered is not associated with a recipe id number. You'll be brought back to the main menu. ")
+                    print("-"*25)
+                    return None
+
+            # Retrieve from the database the recipe to be delete based on the recipe id picked by users
+            recipe_to_be_deleted = session.query(Recipe).get(int(recipe_id_picked))
+            print("-"*25)
+            print("Here's the recipe you are about to delete:")
+            print(recipe_to_be_deleted)
+
+            delete_confirmation = input("Are you sure you want to delete this recipe? Enter yes or no: ").lower()                        
+            while delete_confirmation not in ['yes', 'no']:
+                print('Your answer must be yes or no, please enter a correct input')
+                delete_confirmation = input("Are you sure you want to delete this recipe? Enter yes or no: ").lower()                        
+
+            if delete_confirmation == 'yes':
+                    recipe_to_be_deleted = session.query(Recipe).filter(Recipe.id == recipe_id_picked).one()
+                    session.delete(recipe_to_be_deleted)                    
+                    session.commit()
+                    print('Your recipe has been deleted successfully!')
                     
+                    next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
 
-edit_recipe()
-    #                         if recipe_to_delete:
-    #                         # Delete the recipe (ingredient) from the database
-    #                         # session.delete(recipe_to_delete)
-    #                         # session.commit()
+                    while next_action not in ['1', '2']:
+                        print('Your answer must be 1 or 2, please enter a correct input')
+                        next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
 
-    # # except:
-    # #     print("Something went wrong.")
+                    if next_action == '1':
+                        edit_recipe()
+                    elif next_action == '2':
+                        return
+                
+            elif delete_confirmation == 'no':
+                    next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                    while next_action not in ['1', '2']:
+                        print('Your answer must be 1 or 2, please enter a correct input')
+                        next_action = input("What would you like to do next?\n1. Go back to editing recipes\n2. Return to the main menu\nEnter the number associated with your choice: ")
+
+                    if next_action == '1':
+                        edit_recipe()
+                    elif next_action == '2':
+                        return
+
+    except:
+        print("Something went wrong.")
+
+def main_menu():
+    user_choice = None
+
+    while user_choice != "quit":
+        print("Main menu")
+        print("-----------------------")
+        print("Pick a choice")
+        print("1. Create a new recipe")
+        print("2. View all recipes")
+        print("3. Search for a recipe by ingredients")
+        print("4. Edit a recipe")
+        print("5. Delete a recipe")
+        print('Type "quit" to exit')
+        user_choice = input('Your choice (pick a number or type "quit"): ')
+
+        if user_choice == "1":
+            create_recipe()
+            continue
+        elif user_choice == "2":
+            view_all_recipes()
+            continue
+        elif user_choice == "3":
+            search_by_ingredients
+            continue
+        elif user_choice == "4":
+            edit_recipe
+            continue
+        elif user_choice == "5":
+            delete_recipe()
+            continue
+        elif user_choice.lower() == "quit":
+            # session.close()
+            # engine.dispose()
+            break
+        else:
+            print('Wrong input, please pick a number or type "quit": ')
+            continue
+
+main_menu()
