@@ -262,12 +262,17 @@ def search_by_ingredients():
         search_ingredient = [ingredients[num - 1] for num in ingredients_from_numbers_picked]
         print("Selected ingredients:", search_ingredient)
 
-        conditions = [
+        conditions = []
 
+        # Initialize an empty list called conditions
+        for ingredient in search_ingredient:
+            like_term = "%" + ingredient + "%"  # Make a search string with % on both sides
+            condition = Recipe.ingredients.like(like_term)  # Create a like condition for the ingredient
+            conditions.append(condition)  # Append the condition to the conditions list
 
-        ]
-
-
+        related_recipes = session.query(Recipe).filter(*conditions)
+        for recipe in related_recipes:
+            print(recipe)
 
 search_by_ingredients()
 
