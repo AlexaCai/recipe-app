@@ -27,7 +27,6 @@ class Recipe(Base):
     def __str__(self):
         output = (
             "-" * 10 + "\n" +
-            "Recipe added successfully! " + "\n" +
             "Name of the recipe: " + str(self.name) + "\n" +
             "Cooking time (min): " + str(self.cooking_time) + "\n" +
             "Ingredients: " + str(self.ingredients) + "\n" +
@@ -61,6 +60,7 @@ class Recipe(Base):
 # Create the tables of the model defined (class Recipe) above
 Base.metadata.create_all(engine)
 
+
 def create_recipe():
     try:
 
@@ -75,7 +75,7 @@ def create_recipe():
                 print("-" * 25)
                 name_line = input("Enter the name of the recipe: ")
                 name = name_line
-            # Ensure the field only contains alpa. character (with exception for spaces, which are allowed)
+            # Ensure the field only contains alpa. characters (with exception for spaces, which are allowed)
             elif not name_line.replace(" ", "").isalnum():
                 print("-" * 25)
                 print("You must enter an alphanumeric character in this field. Please update your recipe name.")
@@ -89,6 +89,9 @@ def create_recipe():
                 print("-"*25)
                 name_line = input("Enter the name of the recipe: ")
                 name = name_line
+
+        print("Recipe name added successfully!")
+
 
         #Choosing the cooking time in minutes
         cooking_time = input("Enter the cooking time in minutes: ")
@@ -109,6 +112,8 @@ def create_recipe():
                 print("-"*25)
                 cooking_time_line = input("Enter the cooking time in minutes: ")
                 cooking_time = cooking_time_line
+
+        print("Recipe cooking time added successfully!")
 
 
         #Add the ingredients
@@ -166,7 +171,7 @@ def create_recipe():
                 ingredients_string = ", ".join(ingredients)
                 
 
-        #Calulcate the difficulty based on cooking time and ingredients
+        #C alulcate the difficulty based on cooking time and ingredients
         # By creating an instance of the Recipe class, we can call the calculate_difficulty method on that \
         # instance and set the difficulty attribute specifically for the recipe created by the user. 
         # Recipe_instance is a placeholder that helps calculate/accessing calculate_difficulty function \
@@ -184,13 +189,87 @@ def create_recipe():
 
         print(recipe_entry)
 
-        session.add(recipe_entry)
-        session.commit()
+        # session.add(recipe_entry)
+        # session.commit()
 
     except:
         print("Something went wrong.")
 
 
+def view_all_recipes():
+    try:
+        recipes_list = session.query(Recipe).all()
+        if not recipes_list:
+            print("There are no recipes in the database, you'll therefore be brought back to the main menu.")
+            return None
+        else:
+            for recipe in recipes_list:
+                print(recipe) 
+
+    except:
+        print("Something went wrong.")
 
 
-create_recipe()
+def search_by_ingredients():
+    # try:
+        recipes_list = session.query(Recipe).count()
+        all_ingredients = []
+
+        if recipes_list == 0:
+            print("There are no recipes in the database, you'll therefore be brought back to the main menu.")
+            return None
+        else:
+            results = session.query(Recipe.ingredients).all()
+            for items in results:
+                ingredient_string = items[0]
+                ingredient_list = ingredient_string.split(", ")
+                for ingredient in ingredient_list:
+                    if ingredient not in all_ingredients:
+                        all_ingredients.append(ingredient)
+        
+        ingredients = sorted(all_ingredients)
+        for index, ingredient in enumerate(ingredients, start=1):
+            print(str(index) + ". " + ingredient)
+            
+        # Used to calculate to maximum (or higher) number associated with an ingredient in the list shown \
+        # to users. This is later used to ensure used select a number associated with an ingredients that \
+        # is within the existing range of numbers    
+        max_index = max(range(1, len(ingredients) + 1))
+
+        print("-----------------------")
+        number_picked = input(" Enter the number(s) associated with the ingredient(s) you would like to search for recipes with.\n If you want to search with more than one ingredient, the numbers must be separated by a space an nothing else.\n Your number(s): ")
+
+        while not number_picked.strip() or not number_picked.replace(" ", "").isnumeric() or any(int(num) == 0 for num in number_picked.split()) or any(int(num) > max_index for num in number_picked.split()):
+            # Ensure the field is not empty
+            if not number_picked.strip():
+                print("-" * 25)
+                print("You must enter a value in this field (cannot stay empty). Please add the number(s) associated to the ingredient(s) with which you would like to search for recipes. If you want to enter more than one number, make sure to separate them with a space and nothing else.")
+                print("-" * 25)
+                number_picked = input("Your number(s): ")
+            # Ensure only number are added in this field
+            elif not number_picked.replace(" ", "").isnumeric():
+                print("-"*25)
+                print("Only numbers are accepted in this field. Please add the number(s) associated to the ingredient(s) with which you would like to search for recipes with. If you want to enter more than one number, make sure to separate them with a space and nothing else.")
+                print("-"*25)
+                number_picked = input("Your number(s): ")
+            elif any(int(num) == 0 for num in number_picked.split()) or any(int(num) > max_index for num in number_picked.split()):
+                print("-"*25)
+                print("The number or one of the numbers you entered is not within the range of the available ingredient(s) number(s). You'll be brought back to the main menu. ")
+                print("-"*25)
+                return None
+
+        ingredients_from_numbers_picked = [int(num) for num in number_picked.split()]
+        search_ingredient = [ingredients[num - 1] for num in ingredients_from_numbers_picked]
+        print("Selected ingredients:", search_ingredient)
+
+        conditions = [
+
+
+        ]
+
+
+
+search_by_ingredients()
+
+    # except:
+    #     print("Something went wrong.")
