@@ -633,11 +633,10 @@ def edit_recipe():
                                                 print("A maximum of 255 characters is allowed for a recipe's ingredient. Please reduce the number of characters of your ingredient name.")
                                                 print("-" * 25) 
                                                 ingredients_input = input("Enter the ingredient (one at a time): ")
-
-                                            if ingredients_input in ingredients_list or ingredients_input in ingredients_added:
+                                            elif ingredients_input in ingredients_list or ingredients_input in ingredients_added:
                                                 print(ingredients_input + " is already in the list, choose another ingredient.")
-                                            
-                                            ingredients_input = input("Enter the ingredient (one at a time): ")
+                                                ingredients_input = input("Enter the ingredient (one at a time): ")
+
 
                                         # Append the new ingredient to the list of newly added ingredients so that the next loop 
                                         # for the next ingredient(s) to be entered (if more than one ingredient) will consider it.
@@ -684,6 +683,7 @@ def edit_recipe():
                                             edit_recipe()
                                         elif next_action == "2":
                                             return 
+                                        main_menu()
     except:
         print("Something went wrong.")
 
