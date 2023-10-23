@@ -2,6 +2,21 @@ from django.db import models
 
 # Create your models here.
 
+unit_measure_choices= (
+('ml - milliliter', 'ml - Milliliter'), 
+('fl oz - fluid ounce', 'fl oz - Fluid Ounce'), 
+('tbsp - tablespoon', 'tbsp - Tablespoon'), 
+('tsp - teaspoon', 'tsp - Teaspoon'), 
+('L - liter', 'L - Liter'), 
+('pt - pint', 'pt - Pint'), 
+('g - gram', 'g - Gram'), 
+('oz - ounce', 'oz - Ounce'), 
+('lb - pound', 'lb - Pound'), 
+('kg - kilogram', 'kg - Kilogram'), 
+('unit', 'Unit'),
+('units', 'Units'), 
+)
+
 category_choices= (
 ('afghan', 'Afghan'), 
 ('albanian', 'Albanian '), 
@@ -188,27 +203,29 @@ category_choices= (
 )
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=50) # ok
-    description = models.TextField() # ok
-    cooking_time = models.IntegerField(help_text= 'in minutes') # ok
+    name = models.CharField(max_length=50) 
+    description = models.TextField(blank=True) 
+    cooking_time = models.IntegerField(help_text= 'in minutes') 
     ingredients = models.CharField(max_length=255, default='', help_text='Each ingredients must be separated by a comma.') # ok
-    cooking_instructions = models.TextField() # ok
-    category = models.CharField(max_length=30, choices=category_choices, default='other', help_text= 'select the country associated to the recipe') # ok 
-    creation_date = models.DateField(auto_now_add=True) # ok
+    difficulty = models.CharField(max_length=20, blank=True, null=True, help_text='This value is calculated automatically, not input require here.')  # New field to store difficulty
+    cooking_instructions = models.TextField() 
+    origin_country = models.CharField(max_length=30, choices=category_choices, default='other', help_text= 'select the country associated to the recipe') # ok 
+    creation_date = models.DateField(auto_now_add=True) 
 
-    # No difficulty variable to store and display the ouput of the function calculate_difficulty
-
-    def calculate_difficulty(self, cooking_time, ingredients):
+    def calculate_difficulty(self):
         ingredients = self.ingredients.split(', ')
-        if cooking_time < 10 and len(ingredients) < 4:
-            difficulty = "easy"
-        elif cooking_time < 10 and len(ingredients) >= 4:
-            difficulty = "medium"
-        elif cooking_time >= 10 and len(ingredients) < 4:
-            difficulty = "intermediate"
-        elif cooking_time >= 10 and len(ingredients) >= 4:
-            difficulty = "hard"
-        return difficulty
+        if self.cooking_time < 10 and len(ingredients) < 4:
+            return "easy"
+        elif self.cooking_time < 10 and len(ingredients) >= 4:
+            return "medium"
+        elif self.cooking_time >= 10 and len(ingredients) < 4:
+            return "intermediate"
+        elif self.cooking_time >= 10 and len(ingredients) >= 4:
+            return "hard"
+
+    def save(self, *args, **kwargs):
+        self.difficulty = self.calculate_difficulty()
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.name

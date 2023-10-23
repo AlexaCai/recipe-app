@@ -6,7 +6,7 @@ from .models import Recipe
 class RecipeModelTest(TestCase):
     def setUpTestData():
        # Set up non-modified objects used by some test methods
-        Recipe.objects.create(name='Tacos al pastor', description='Tacos al pastor are mexican tacos that can be found around all Mexico and many other countries', cooking_time='45', ingredients='tortillas, meat, salsa, coriander', cooking_instructions='Here are the cooking instructions', category='mexican', creation_date='2020-10-10')
+        Recipe.objects.create(name='Tacos al pastor', description='Tacos al pastor are mexican tacos that can be found around all Mexico and many other countries', cooking_time=45, ingredients='tortillas, meat, salsa, coriander', cooking_instructions='Here are the cooking instructions', origin_country='mexican', creation_date='2020-10-10')
 
     def test_recipe_name(self):
        # Get a recipe object to test
@@ -35,21 +35,21 @@ class RecipeModelTest(TestCase):
         # Create a recipe with cooking time and ingredients for an easy difficulty
         recipe = Recipe(cooking_time=5, ingredients="ingredient1, ingredient2, ingredient3")
         # Calculate the difficulty
-        difficulty = recipe.calculate_difficulty(recipe.cooking_time, recipe.ingredients)
+        difficulty = recipe.calculate_difficulty()
         # Check if the calculated difficulty is "easy"
         self.assertEqual(difficulty, "easy")
 
     def test_calculate_difficulty_medium(self):
         recipe = Recipe(cooking_time=5, ingredients="ingredient1, ingredient2, ingredient3, ingredient4")
-        difficulty = recipe.calculate_difficulty(recipe.cooking_time, recipe.ingredients)
+        difficulty = recipe.calculate_difficulty()
         self.assertEqual(difficulty, "medium")
 
     def test_calculate_difficulty_intermediate(self):
         recipe = Recipe(cooking_time=45, ingredients="ingredient1, ingredient2, ingredient3")
-        difficulty = recipe.calculate_difficulty(recipe.cooking_time, recipe.ingredients)
+        difficulty = recipe.calculate_difficulty()
         self.assertEqual(difficulty, "intermediate")
 
     def test_calculate_difficulty_hard(self):
         recipe = Recipe(cooking_time=45, ingredients="ingredient1, ingredient2, ingredient3, ingredient4")
-        difficulty = recipe.calculate_difficulty(recipe.cooking_time, recipe.ingredients)
+        difficulty = recipe.calculate_difficulty()
         self.assertEqual(difficulty, "hard")
