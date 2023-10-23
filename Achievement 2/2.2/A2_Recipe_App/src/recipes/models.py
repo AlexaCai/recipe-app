@@ -2,21 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-unit_measure_choices= (
-('ml - milliliter', 'ml - Milliliter'), 
-('fl oz - fluid ounce', 'fl oz - Fluid Ounce'), 
-('tbsp - tablespoon', 'tbsp - Tablespoon'), 
-('tsp - teaspoon', 'tsp - Teaspoon'), 
-('L - liter', 'L - Liter'), 
-('pt - pint', 'pt - Pint'), 
-('g - gram', 'g - Gram'), 
-('oz - ounce', 'oz - Ounce'), 
-('lb - pound', 'lb - Pound'), 
-('kg - kilogram', 'kg - Kilogram'), 
-('unit', 'Unit'),
-('units', 'Units'), 
-)
-
 category_choices= (
 ('afghan', 'Afghan'), 
 ('albanian', 'Albanian '), 
